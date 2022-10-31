@@ -5,5 +5,5 @@ const (
 
 	Port = 5005
 
-	MonitorTick = 1
+	MonitorTick = 60
 )

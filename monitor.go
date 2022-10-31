@@ -1,9 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"strings"
 	"time"
+
+	"github.com/wavesplatform/gowaves/pkg/client"
+	"github.com/wavesplatform/gowaves/pkg/proto"
 )
 
 type Monitor struct {
@@ -18,6 +24,35 @@ func (m *Monitor) processBlock(n uint64) {
 	}
 }
 
+func (m *Monitor) loadBalances() {
+	var as []*Address
+	db.Find(&as)
+
+	cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}})
+	if err != nil {
+		log.Println(err)
+		// logTelegram(err.Error())
+	}
+
+	for _, a := range as {
+		c, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		if strings.HasPrefix(a.Address, "3A") {
+			ao := proto.MustAddressFromString(a.Address)
+
+			balance, _, err := cl.Addresses.Balance(c, ao)
+			if err != nil {
+				log.Println(err)
+				// logTelegram(err.Error())
+			}
+
+			a.Balance = balance.Balance
+			db.Save(a)
+		}
+	}
+}
+
 func (m *Monitor) start() {
 	for {
 		h := getHeight()
@@ -26,6 +61,10 @@ func (m *Monitor) start() {
 			m.processBlock(i)
 			log.Println(fmt.Sprintf("Done block: %d", i))
 		}
+
+		m.loadBalances()
+
+		log.Println("Done loading balances.")
 
 		time.Sleep(time.Second * MonitorTick)
 	}

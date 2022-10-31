@@ -11,5 +11,7 @@ func initMacaron() *macaron.Macaron {
 	m.Use(cache.Cacher())
 	m.Use(macaron.Renderer())
 
+	m.Get("/distribution", distributionView)
+
 	return m
 }

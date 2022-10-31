@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/wavesplatform/gowaves/pkg/client"
@@ -98,8 +99,17 @@ func contains(s []string, str string) bool {
 }
 
 func myappend(s []string, str string) []string {
+	if !strings.HasPrefix(str, "3A") {
+		return s
+	}
+
 	if !contains(s, str) {
 		s = append(s, str)
 	}
 	return s
+}
+
+type AddressResponse struct {
+	Address string `json:"address"`
+	Balance uint64 `json:"balance"`
 }
