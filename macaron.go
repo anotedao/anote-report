@@ -12,6 +12,7 @@ func initMacaron() *macaron.Macaron {
 	m.Use(macaron.Renderer())
 
 	m.Get("/distribution", distributionView)
+	m.Get("/", distView)
 
 	return m
 }

@@ -110,6 +110,7 @@ func myappend(s []string, str string) []string {
 }
 
 type AddressResponse struct {
-	Address string `json:"address"`
-	Balance uint64 `json:"balance"`
+	Address      string  `json:"address"`
+	Balance      uint64  `json:"balance"`
+	BalanceFloat float64 `json:"balance_float"`
 }

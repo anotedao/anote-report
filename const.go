@@ -5,5 +5,7 @@ const (
 
 	Port = 5005
 
-	MonitorTick = 60
+	MonitorTick = 600
+
+	MULTI8 = 100000000
 )

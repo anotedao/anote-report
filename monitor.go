@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -59,8 +58,9 @@ func (m *Monitor) start() {
 
 		for i := uint64(1); i <= h; i++ {
 			m.processBlock(i)
-			log.Println(fmt.Sprintf("Done block: %d", i))
 		}
+
+		log.Println("Done loading blocks.")
 
 		m.loadBalances()
 
