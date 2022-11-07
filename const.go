@@ -8,4 +8,6 @@ const (
 	MonitorTick = 600
 
 	MULTI8 = 100000000
+
+	NodesListAddress = "3AVTze8bR1SqqMKv3uLedrnqCuWpdU7GZwX"
 )

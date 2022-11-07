@@ -46,7 +46,7 @@ func (m *Monitor) loadBalances() {
 				// logTelegram(err.Error())
 			}
 
-			if a.Balance > balance.Balance {
+			if a.Balance > balance.Balance && !isNode(a.Address) {
 				logTelegram("Suspicious activity: " + a.Address)
 			}
 

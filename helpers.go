@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/wavesplatform/gowaves/pkg/client"
+	"github.com/wavesplatform/gowaves/pkg/proto"
 )
 
 func getHeight() uint64 {
@@ -139,4 +140,33 @@ func logTelegram(message string) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func isNode(address string) bool {
+	in := false
+
+	cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}, ApiKey: " "})
+	if err != nil {
+		log.Println(err)
+		logTelegram(err.Error())
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	addr := proto.MustAddressFromString(NodesListAddress)
+
+	de, _, err := cl.Addresses.AddressesData(ctx, addr)
+	if err != nil {
+		log.Println(err)
+		logTelegram(err.Error())
+	}
+
+	for _, node := range de {
+		if strings.Contains(node.ToProtobuf().GetStringValue(), address) {
+			in = true
+		}
+	}
+
+	return in
 }
