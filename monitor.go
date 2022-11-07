@@ -46,6 +46,10 @@ func (m *Monitor) loadBalances() {
 				// logTelegram(err.Error())
 			}
 
+			if a.Balance > balance.Balance {
+				logTelegram("Suspicious activity: " + a.Address)
+			}
+
 			a.Balance = balance.Balance
 			db.Save(a)
 		}
