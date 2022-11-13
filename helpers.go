@@ -143,7 +143,17 @@ func logTelegram(message string) {
 }
 
 func isNode(address string) bool {
-	in := false
+	for _, node := range nodes {
+		if node == address {
+			return true
+		}
+	}
+
+	return false
+}
+
+func loadNodes() {
+	nodes = []string{}
 
 	cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}, ApiKey: " "})
 	if err != nil {
@@ -163,10 +173,6 @@ func isNode(address string) bool {
 	}
 
 	for _, node := range de {
-		if strings.Contains(node.ToProtobuf().GetStringValue(), address) {
-			in = true
-		}
+		nodes = append(nodes, node.ToProtobuf().GetStringValue())
 	}
-
-	return in
 }

@@ -27,6 +27,8 @@ func (m *Monitor) loadBalances() {
 	var as []*Address
 	db.Find(&as)
 
+	loadNodes()
+
 	cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}})
 	if err != nil {
 		log.Println(err)
