@@ -144,7 +144,7 @@ func logTelegram(message string) {
 
 func isNode(address string) bool {
 	for _, node := range nodes {
-		if node == address {
+		if strings.Contains(node, address) {
 			return true
 		}
 	}
