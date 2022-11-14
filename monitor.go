@@ -12,6 +12,7 @@ import (
 )
 
 type Monitor struct {
+	StartHeight uint64
 }
 
 func (m *Monitor) processBlock(n uint64) {
@@ -65,9 +66,11 @@ func (m *Monitor) start() {
 	for {
 		h := getHeight()
 
-		for i := uint64(1); i <= h; i++ {
+		for i := m.StartHeight; i <= h; i++ {
 			m.processBlock(i)
 		}
+
+		m.StartHeight = h
 
 		log.Println("Done loading blocks.")
 
@@ -80,6 +83,6 @@ func (m *Monitor) start() {
 }
 
 func initMonitor() {
-	m := &Monitor{}
+	m := &Monitor{StartHeight: 1}
 	go m.start()
 }
