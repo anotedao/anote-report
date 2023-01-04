@@ -173,6 +173,7 @@ func loadNodes() {
 	}
 
 	for _, node := range de {
-		nodes = append(nodes, node.ToProtobuf().GetStringValue())
+		n := strings.Split(node.ToProtobuf().GetStringValue(), "__")[1]
+		nodes = append(nodes, n)
 	}
 }
