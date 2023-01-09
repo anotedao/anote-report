@@ -57,12 +57,11 @@ func (m *Monitor) loadBalances() {
 				logTelegram("Suspicious activity: " + a.Address)
 			}
 
-			// if !isNode(a.Address) {
-			// 	a.Balance = balance.Balance
-			// } else {
-			// 	a.Balance = 0
-			// }
-			a.Balance = balance.Balance
+			if !isNode(a.Address) {
+				a.Balance = balance.Balance
+			} else {
+				a.Balance = 0
+			}
 			db.Save(a)
 		}
 	}
