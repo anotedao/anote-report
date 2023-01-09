@@ -83,11 +83,27 @@ func (m *Monitor) start() {
 
 		log.Println("Done loading balances.")
 
+		ks := &KeyValue{Key: "lastHeight"}
+		db.FirstOrCreate(ks, ks)
+		ks.ValueInt = h
+		db.Save(ks)
+
 		time.Sleep(time.Second * MonitorTick)
 	}
 }
 
 func initMonitor() {
 	m := &Monitor{StartHeight: 1}
+
+	ks := &KeyValue{Key: "lastHeight"}
+	db.FirstOrCreate(ks, ks)
+
+	if ks.ValueInt == 0 {
+		ks.ValueInt = 1
+		db.Save(ks)
+	}
+
+	m.StartHeight = ks.ValueInt
+
 	go m.start()
 }
