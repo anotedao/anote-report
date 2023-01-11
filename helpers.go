@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/wavesplatform/gowaves/pkg/client"
+	"github.com/wavesplatform/gowaves/pkg/crypto"
 	"github.com/wavesplatform/gowaves/pkg/proto"
 )
 
@@ -53,6 +54,7 @@ func getBlockAddresses(n uint64) []string {
 
 	for _, t := range b.Transactions {
 		at := AnoteTransaction{}
+
 		trb, err := json.Marshal(t)
 		if err != nil {
 			log.Println(err)
@@ -68,6 +70,42 @@ func getBlockAddresses(n uint64) []string {
 
 		if len(at.Recipient) > 0 {
 			as = myappend(as, at.Recipient)
+		}
+
+		for _, tr := range at.Transfers {
+			if len(tr.Recipient) > 0 {
+				as = myappend(as, tr.Recipient)
+			}
+		}
+
+		cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}})
+		if err != nil {
+			log.Println(err)
+			// logTelegram(err.Error())
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		d, err := crypto.NewDigestFromBase58(at.ID)
+		if err == nil {
+			ti, _, err := cl.Transactions.Info(ctx, d)
+			if err != nil {
+				log.Println(err)
+			}
+
+			ati := &AnoteTransactionInfo{}
+			tib, err := json.Marshal(ti)
+			if err != nil {
+				log.Println(err)
+			}
+			json.Unmarshal(tib, &ati)
+
+			for _, t := range ati.StateChanges.Transfers {
+				if len(t.Address) > 0 {
+					as = myappend(as, t.Address)
+				}
+			}
 		}
 	}
 
@@ -91,6 +129,47 @@ type AnoteTransaction struct {
 	Amount          int         `json:"amount"`
 	Fee             int         `json:"fee"`
 	Recipient       string      `json:"recipient"`
+	Transfers       []struct {
+		Recipient string `json:"recipient"`
+		Amount    int    `json:"amount"`
+	} `json:"transfers"`
+}
+
+type AnoteTransactionInfo struct {
+	Type            int           `json:"type"`
+	Version         int           `json:"version"`
+	ID              string        `json:"id"`
+	Proofs          []interface{} `json:"proofs"`
+	SenderPublicKey string        `json:"senderPublicKey"`
+	DApp            string        `json:"dApp"`
+	Call            struct {
+		Function string        `json:"function"`
+		Args     []interface{} `json:"args"`
+	} `json:"call"`
+	Payment []struct {
+		Amount  int         `json:"amount"`
+		AssetID interface{} `json:"assetId"`
+	} `json:"payment"`
+	FeeAssetID      interface{} `json:"feeAssetId"`
+	Fee             int         `json:"fee"`
+	Timestamp       int64       `json:"timestamp"`
+	SpentComplexity int         `json:"spentComplexity"`
+	Height          int         `json:"height"`
+	StateChanges    struct {
+		Data      []interface{} `json:"data"`
+		Transfers []struct {
+			Address string      `json:"address"`
+			Asset   interface{} `json:"asset"`
+			Amount  int         `json:"amount"`
+		} `json:"transfers"`
+		Issues      []interface{} `json:"issues"`
+		Reissues    []interface{} `json:"reissues"`
+		Burns       []interface{} `json:"burns"`
+		SponsorFees []interface{} `json:"sponsorFees"`
+		Leases      []interface{} `json:"leases"`
+		LeaseCancel interface{}   `json:"leaseCancel"`
+		Invokes     []interface{} `json:"invokes"`
+	} `json:"StateChanges"`
 }
 
 func contains(s []string, str string) bool {
