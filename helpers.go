@@ -31,7 +31,7 @@ func getHeight() uint64 {
 
 	bh, _, err := cl.Blocks.Height(ctx)
 
-	if err != nil {
+	if err == nil {
 		height = bh.Height
 	}
 
