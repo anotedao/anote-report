@@ -52,60 +52,62 @@ func getBlockAddresses(n uint64) []string {
 
 	b, _, err := cl.Blocks.At(ctx, n)
 
-	as = myappend(as, b.Generator.String())
+	if err == nil {
+		as = myappend(as, b.Generator.String())
 
-	for _, t := range b.Transactions {
-		at := AnoteTransaction{}
+		for _, t := range b.Transactions {
+			at := AnoteTransaction{}
 
-		trb, err := json.Marshal(t)
-		if err != nil {
-			log.Println(err)
-		}
-		json.Unmarshal(trb, &at)
-
-		s, err := t.GetSender(55)
-		if err != nil {
-			log.Println(err)
-		}
-
-		as = myappend(as, s.String())
-
-		if len(at.Recipient) > 0 {
-			as = myappend(as, at.Recipient)
-		}
-
-		for _, tr := range at.Transfers {
-			if len(tr.Recipient) > 0 {
-				as = myappend(as, tr.Recipient)
+			trb, err := json.Marshal(t)
+			if err != nil {
+				log.Println(err)
 			}
-		}
+			json.Unmarshal(trb, &at)
 
-		cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}})
-		if err != nil {
-			log.Println(err)
-			// logTelegram(err.Error())
-		}
-
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		d, err := crypto.NewDigestFromBase58(at.ID)
-		if err == nil {
-			ti, _, err := cl.Transactions.Info(ctx, d)
+			s, err := t.GetSender(55)
 			if err != nil {
 				log.Println(err)
 			}
 
-			ati := &AnoteTransactionInfo{}
-			tib, err := json.Marshal(ti)
+			as = myappend(as, s.String())
+
+			if len(at.Recipient) > 0 {
+				as = myappend(as, at.Recipient)
+			}
+
+			for _, tr := range at.Transfers {
+				if len(tr.Recipient) > 0 {
+					as = myappend(as, tr.Recipient)
+				}
+			}
+
+			cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}})
 			if err != nil {
 				log.Println(err)
+				// logTelegram(err.Error())
 			}
-			json.Unmarshal(tib, &ati)
 
-			for _, t := range ati.StateChanges.Transfers {
-				if len(t.Address) > 0 {
-					as = myappend(as, t.Address)
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+
+			d, err := crypto.NewDigestFromBase58(at.ID)
+			if err == nil {
+				ti, _, err := cl.Transactions.Info(ctx, d)
+				if err != nil {
+					log.Println(err)
+				}
+
+				ati := &AnoteTransactionInfo{}
+				tib, err := json.Marshal(ti)
+				if err != nil {
+					log.Println(err)
+				}
+				json.Unmarshal(tib, &ati)
+
+				for _, t := range ati.StateChanges.Transfers {
+					if len(t.Address) > 0 {
+						as = myappend(as, t.Address)
+					}
 				}
 			}
 		}
