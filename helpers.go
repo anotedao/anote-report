@@ -18,7 +18,7 @@ import (
 )
 
 func getHeight() uint64 {
-	height := uint64(0)
+	height := uint64(1)
 
 	cl, err := client.NewClient(client.Options{BaseUrl: AnoteNodeURL, Client: &http.Client{}})
 	if err != nil {
