@@ -253,6 +253,7 @@ func loadNodes() {
 	if err != nil {
 		log.Println(err)
 		logTelegram(err.Error())
+		return
 	}
 
 	for _, node := range de {

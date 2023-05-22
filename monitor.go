@@ -46,6 +46,7 @@ func (m *Monitor) loadBalances() {
 			balance, _, err := cl.Addresses.BalanceDetails(c, ao)
 			if err != nil {
 				log.Println(err)
+				return
 				// logTelegram(err.Error())
 			}
 
