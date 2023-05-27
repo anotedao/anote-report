@@ -36,8 +36,9 @@ func distView(ctx *macaron.Context) string {
 
 	for i, a := range as {
 		bf := float64(a.Balance) / float64(MULTI8)
+		bfn := float64(a.New) / float64(MULTI8)
 
-		response += fmt.Sprintf("%d.&nbsp;&nbsp;&nbsp;%s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%.8f\n", i+1, a.Address, bf)
+		response += fmt.Sprintf("%d.&nbsp;&nbsp;&nbsp;%s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%.8f (%.8f)\n", i+1, a.Address, bf, bfn)
 	}
 
 	response += "</pre></html>"

@@ -43,13 +43,14 @@ func (m *Monitor) loadBalances() {
 		if strings.HasPrefix(a.Address, "3A") {
 			ao := proto.MustAddressFromString(a.Address)
 
-			balance, _, err := cl.Addresses.Balance(c, ao)
+			balance, _, err := cl.Addresses.BalanceDetails(c, ao)
 			if err != nil {
 				log.Println(err)
+				return
 				// logTelegram(err.Error())
 			}
 
-			if a.Balance > balance.Balance &&
+			if a.Balance > balance.Effective &&
 				!isNode(a.Address) &&
 				a.Address != "3A9y1Zy78DDApbQWXKxonXxci6DvnJnnNZD" &&
 				a.Address != "3ANmnLHt8mR9c36mdfQVpBtxUs8z1mMAHQW" &&
@@ -58,7 +59,8 @@ func (m *Monitor) loadBalances() {
 			}
 
 			if !isNode(a.Address) {
-				a.Balance = balance.Balance
+				a.Balance = balance.Effective
+				a.New = balance.Effective - balance.Generating
 			} else {
 				a.Balance = 0
 			}
@@ -83,11 +85,27 @@ func (m *Monitor) start() {
 
 		log.Println("Done loading balances.")
 
+		ks := &KeyValue{Key: "lastHeight"}
+		db.FirstOrCreate(ks, ks)
+		ks.ValueInt = h
+		db.Save(ks)
+
 		time.Sleep(time.Second * MonitorTick)
 	}
 }
 
 func initMonitor() {
 	m := &Monitor{StartHeight: 1}
+
+	ks := &KeyValue{Key: "lastHeight"}
+	db.FirstOrCreate(ks, ks)
+
+	if ks.ValueInt == 0 {
+		ks.ValueInt = 1
+		db.Save(ks)
+	}
+
+	m.StartHeight = ks.ValueInt
+
 	go m.start()
 }
