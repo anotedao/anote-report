@@ -54,6 +54,8 @@ func (m *Monitor) loadBalances() {
 				!isNode(a.Address) &&
 				a.Address != "3A9y1Zy78DDApbQWXKxonXxci6DvnJnnNZD" &&
 				a.Address != "3ANmnLHt8mR9c36mdfQVpBtxUs8z1mMAHQW" &&
+				a.Address != "3AFnfAsxMsJdF9UF3JLVAzx3hjJcK5pguXd" &&
+				a.Address != "3AQT89sRrWHqPSwrpfJAj3Yey7BCBTAy4jT" &&
 				a.Address != "3ANzidsKXn9a1s9FEbWA19hnMgV9zZ2RB9a" {
 				logTelegram("Suspicious activity: " + a.Address)
 			}
