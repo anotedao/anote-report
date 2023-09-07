@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var conf *Config
+
 var m *macaron.Macaron
 
 var db *gorm.DB
@@ -15,6 +17,8 @@ var nodes []string
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	conf = initConfig()
 
 	db = initDb()
 

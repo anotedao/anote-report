@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -18,11 +18,11 @@ func initDb() *gorm.DB {
 
 	dbconf.Logger = logger.Default.LogMode(logger.Error)
 
-	db, err = gorm.Open(sqlite.Open("report.db"), &dbconf)
+	db, err = gorm.Open(postgres.Open(conf.DSN), &dbconf)
 
 	if err != nil {
 		log.Println(err)
-		// logTelegram(err.Error())
+		logTelegram(err.Error())
 	}
 
 	if err := db.AutoMigrate(&Address{}, &KeyValue{}); err != nil {
