@@ -50,7 +50,7 @@ func (m *Monitor) loadBalances() {
 				// logTelegram(err.Error())
 			}
 
-			if a.Balance > balance.Effective &&
+			if balance.Effective-a.Balance > MULTI8 &&
 				!isNode(a.Address) &&
 				a.Address != "3A9y1Zy78DDApbQWXKxonXxci6DvnJnnNZD" &&
 				a.Address != "3ANmnLHt8mR9c36mdfQVpBtxUs8z1mMAHQW" &&
