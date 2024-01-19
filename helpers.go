@@ -257,7 +257,7 @@ func loadNodes() {
 	}
 
 	for _, node := range de {
-		n := strings.Split(node.ToProtobuf().GetStringValue(), "__")[1]
-		nodes = append(nodes, n)
+		// n := strings.Split(node.ToProtobuf().GetStringValue(), "__")[1]
+		nodes = append(nodes, node.GetKey())
 	}
 }
