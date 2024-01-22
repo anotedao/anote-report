@@ -91,7 +91,7 @@ func getBlockAddresses(n uint64) []string {
 			defer cancel()
 
 			d, err := crypto.NewDigestFromBase58(at.ID)
-			if err == nil && len(d) > 0 {
+			if err == nil {
 				ti, _, err := cl.Transactions.Info(ctx, d)
 				if err != nil {
 					log.Println(err)
@@ -102,11 +102,12 @@ func getBlockAddresses(n uint64) []string {
 				if err != nil {
 					log.Println(err)
 				}
-				json.Unmarshal(tib, &ati)
-
-				for _, t := range ati.StateChanges.Transfers {
-					if len(t.Address) > 0 {
-						as = myappend(as, t.Address)
+				err = json.Unmarshal(tib, &ati)
+				if err != nil {
+					for _, t := range ati.StateChanges.Transfers {
+						if len(t.Address) > 0 {
+							as = myappend(as, t.Address)
+						}
 					}
 				}
 			}
