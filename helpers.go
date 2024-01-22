@@ -91,7 +91,7 @@ func getBlockAddresses(n uint64) []string {
 			defer cancel()
 
 			d, err := crypto.NewDigestFromBase58(at.ID)
-			if err == nil {
+			if err == nil && len(d) > 0 {
 				ti, _, err := cl.Transactions.Info(ctx, d)
 				if err != nil {
 					log.Println(err)
